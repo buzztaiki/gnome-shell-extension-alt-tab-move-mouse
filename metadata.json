@@ -1,0 +1,8 @@
+{
+  "name": "Alt-Tab Move Mouse",
+  "description": "Move mouse pointer onto active window after Alt-Tab",
+  "uuid": "alt-tab-move-mouse@buzztaiki.github.com",
+  "shell-version": [
+    "40", "41"
+  ]
+}
