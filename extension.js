@@ -40,6 +40,15 @@ class Extension {
   }
 }
 
-function init() {
-  return new Extension();
+let extension = null;
+
+function enable() {
+  extension = new Extension();
+  extension.enable();
 }
+
+function disable() {
+  extension.disable();
+  extension = null;
+}
+
