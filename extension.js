@@ -59,11 +59,13 @@ class Extension {
 
 let extension = null;
 
+/* exported enable */
 function enable() {
   extension = new Extension();
   extension.enable();
 }
 
+/* exported disable */
 function disable() {
   extension.disable();
   extension = null;
