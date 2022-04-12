@@ -14,7 +14,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const { Clutter, Meta } = imports.gi;
-const { SwitcherPopup } = imports.ui.switcherPopup;
 const Main = imports.ui.main;
 
 class Extension {
@@ -31,7 +30,7 @@ class Extension {
 
   enable() {
     Main.activateWindow = (window, ...args) => {
-      this.move_pointer_maybe(window);
+      this.movePointerMaybe(window);
       this.origMethods["Main.activateWindow"](window, ...args);
     };
 
@@ -41,8 +40,8 @@ class Extension {
     Main.activateWindow = this.origMethods["Main.activateWindow"];
   }
 
-  move_pointer_maybe(window) {
-    if (!this.pointer_already_on_window(window)) {
+  movePointerMaybe(window) {
+    if (!this.pointerAlreadyOnWindow(window)) {
       const rect = window.get_frame_rect();
       const x = rect.x + rect.width / 2;
       const y = rect.y + rect.height / 2;
@@ -51,7 +50,7 @@ class Extension {
     }
   }
 
-  pointer_already_on_window(window) {
+  pointerAlreadyOnWindow(window) {
     const [x, y] = global.get_pointer();
     const prect = new Meta.Rectangle({ x, y, width: 1, height: 1 });
     return prect.intersect(window.get_frame_rect())[0];
