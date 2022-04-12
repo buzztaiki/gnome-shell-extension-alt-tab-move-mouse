@@ -14,11 +14,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const { Clutter, Meta } = imports.gi;
-const { SwitcherPopup } = imports.ui.switcherPopup;
+const Main = imports.ui.main;
 
 class Extension {
   constructor() {
-    this.orig_method = SwitcherPopup.prototype._finish;
+    this.origMethods = {
+      "Main.activateWindow": Main.activateWindow
+    };
+
     const seat = Clutter.get_default_backend().get_default_seat();
     this.vdevice = seat.create_virtual_device(
       Clutter.InputDeviceType.POINTER_DEVICE
@@ -26,20 +29,19 @@ class Extension {
   }
 
   enable() {
-    const that = this;
-    SwitcherPopup.prototype._finish = function () {
-      that.move_pointer_maybe();
-      that.orig_method.apply(this, arguments);
+    Main.activateWindow = (window, ...args) => {
+      this.movePointerMaybe(window);
+      this.origMethods["Main.activateWindow"](window, ...args);
     };
+
   }
 
   disable() {
-    SwitcherPopup.prototype._finish = this.orig_method;
+    Main.activateWindow = this.origMethods["Main.activateWindow"];
   }
 
-  move_pointer_maybe() {
-    const window = global.display.focus_window;
-    if (!this.pointer_already_on_window(window)) {
+  movePointerMaybe(window) {
+    if (!this.pointerAlreadyOnWindow(window)) {
       const rect = window.get_frame_rect();
       const x = rect.x + rect.width / 2;
       const y = rect.y + rect.height / 2;
@@ -48,7 +50,7 @@ class Extension {
     }
   }
 
-  pointer_already_on_window(window) {
+  pointerAlreadyOnWindow(window) {
     const [x, y] = global.get_pointer();
     const prect = new Meta.Rectangle({ x, y, width: 1, height: 1 });
     return prect.intersect(window.get_frame_rect())[0];
@@ -66,4 +68,3 @@ function disable() {
   extension.disable();
   extension = null;
 }
-
