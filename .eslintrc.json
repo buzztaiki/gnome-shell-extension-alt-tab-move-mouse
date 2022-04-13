@@ -1,0 +1,18 @@
+{
+  "env": {
+    "es2021": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2022
+  },
+  "extends": "eslint:recommended",
+  "globals": {
+    "imports": "readonly",
+    "log": "readonly",
+    "logError": "readonly",
+    "print": "readonly",
+    "printerr": "readonly",
+    "window": "readonly",
+    "global": "readonly"
+  }
+}

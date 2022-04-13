@@ -1,0 +1,20 @@
+{
+  "name": "gnome-shell-extension-alt-tab-move-mouse",
+  "description": "Move mouse pointer onto active window after Alt-Tab.",
+  "scripts": {
+    "lint": "eslint **/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/buzztaiki/gnome-shell-extension-alt-tab-move-mouse.git"
+  },
+  "author": "Taiki Sugawara",
+  "license": "GPLV3",
+  "bugs": {
+    "url": "https://github.com/buzztaiki/gnome-shell-extension-alt-tab-move-mouse/issues"
+  },
+  "homepage": "https://github.com/buzztaiki/gnome-shell-extension-alt-tab-move-mouse#readme",
+  "devDependencies": {
+    "eslint": "^8.13.0"
+  }
+}
