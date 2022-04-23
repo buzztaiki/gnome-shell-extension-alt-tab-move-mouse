@@ -21,22 +21,17 @@ class Extension {
     this.origMethods = {
       "Main.activateWindow": Main.activateWindow
     };
-
+    Main.activateWindow = (window, ...args) => {
+      this.movePointerMaybe(window);
+      this.origMethods["Main.activateWindow"](window, ...args);
+    };
     const seat = Clutter.get_default_backend().get_default_seat();
     this.vdevice = seat.create_virtual_device(
       Clutter.InputDeviceType.POINTER_DEVICE
     );
   }
 
-  enable() {
-    Main.activateWindow = (window, ...args) => {
-      this.movePointerMaybe(window);
-      this.origMethods["Main.activateWindow"](window, ...args);
-    };
-
-  }
-
-  disable() {
+  destroy() {
     Main.activateWindow = this.origMethods["Main.activateWindow"];
   }
 
@@ -52,8 +47,8 @@ class Extension {
 
   pointerAlreadyOnWindow(window) {
     const [x, y] = global.get_pointer();
-    const prect = new Meta.Rectangle({ x, y, width: 1, height: 1 });
-    return prect.intersect(window.get_frame_rect())[0];
+    const rect = new Meta.Rectangle({ x, y, width: 1, height: 1 });
+    return rect.intersect(window.get_frame_rect())[0];
   }
 }
 
@@ -62,11 +57,10 @@ let extension = null;
 /* exported enable */
 function enable() {
   extension = new Extension();
-  extension.enable();
 }
 
 /* exported disable */
 function disable() {
-  extension.disable();
+  extension.destroy();
   extension = null;
 }
