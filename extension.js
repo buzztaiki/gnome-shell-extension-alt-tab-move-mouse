@@ -47,8 +47,8 @@ class Extension {
 
   pointerAlreadyOnWindow(window) {
     const [x, y] = global.get_pointer();
-    const prect = new Meta.Rectangle({ x, y, width: 1, height: 1 });
-    return prect.intersect(window.get_frame_rect())[0];
+    const rect = new Meta.Rectangle({ x, y, width: 1, height: 1 });
+    return rect.intersect(window.get_frame_rect())[0];
   }
 }
 
