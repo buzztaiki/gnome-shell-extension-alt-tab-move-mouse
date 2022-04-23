@@ -21,22 +21,17 @@ class Extension {
     this.origMethods = {
       "Main.activateWindow": Main.activateWindow
     };
-
+    Main.activateWindow = (window, ...args) => {
+      this.movePointerMaybe(window);
+      this.origMethods["Main.activateWindow"](window, ...args);
+    };
     const seat = Clutter.get_default_backend().get_default_seat();
     this.vdevice = seat.create_virtual_device(
       Clutter.InputDeviceType.POINTER_DEVICE
     );
   }
 
-  enable() {
-    Main.activateWindow = (window, ...args) => {
-      this.movePointerMaybe(window);
-      this.origMethods["Main.activateWindow"](window, ...args);
-    };
-
-  }
-
-  disable() {
+  destroy() {
     Main.activateWindow = this.origMethods["Main.activateWindow"];
   }
 
@@ -62,11 +57,10 @@ let extension = null;
 /* exported enable */
 function enable() {
   extension = new Extension();
-  extension.enable();
 }
 
 /* exported disable */
 function disable() {
-  extension.disable();
+  extension.destroy();
   extension = null;
 }
