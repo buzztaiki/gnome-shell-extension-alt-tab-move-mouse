@@ -29,10 +29,16 @@ class Extension {
     this.vdevice = seat.create_virtual_device(
       Clutter.InputDeviceType.POINTER_DEVICE
     );
+    this._wincreated = global.display.connect('window-created', (display, window) => { 
+        if ( !window.demands_attention ) {
+          this.movePointerMaybe(window);
+        }
+    });
   }
 
   destroy() {
     Main.activateWindow = this.origMethods["Main.activateWindow"];
+    global.display.disconnect(this._wincreated);
   }
 
   movePointerMaybe(window) {
