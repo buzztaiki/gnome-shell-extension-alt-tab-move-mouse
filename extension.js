@@ -29,17 +29,56 @@ class Extension {
     this.vdevice = seat.create_virtual_device(
       Clutter.InputDeviceType.POINTER_DEVICE
     );
+
     this._wincreated = global.display.connect('window-created', (display, window) => { 
-        if ( !window.demands_attention ) {
-          this.movePointerMaybe(window);
-        }
+      if (window.allows_move())
+      {
+        this._window = window;
+
+        this._window.connectObject(
+          'notify::demands-attention', this._sync.bind(this),
+          'notify::urgent', this._sync.bind(this),
+          'focus', () => this._focus(),
+          'unmanaged', () => this._sync.bind(this), 
+          this);
+      }
+
+
     });
+
   }
 
   destroy() {
     Main.activateWindow = this.origMethods["Main.activateWindow"];
     global.display.disconnect(this._wincreated);
   }
+
+  _destroy(params) {
+    log("TEST LOG: destory");
+    this._window.disconnectObject();
+    delete this._window;
+  }
+
+
+  _focus() {
+    if (this._window) {
+      log("TEST LOG: focus");
+      log("TEST", this);
+      this.movePointerMaybe(this._window);
+    }
+
+
+    this._destroy();
+  }
+
+  _sync() {
+    // log("TEST LOG: sync");
+    // if (this._window.demands_attention || this._window.urgent)
+    //     return;
+    // this._destroy();
+    this._destroy();
+  }
+
 
   movePointerMaybe(window) {
     if (!this.pointerAlreadyOnWindow(window)) {
