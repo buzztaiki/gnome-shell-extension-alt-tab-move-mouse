@@ -54,7 +54,6 @@ class Extension {
   }
 
   _destroy(params) {
-    log("TEST LOG: destory");
     this._window.disconnectObject();
     delete this._window;
   }
@@ -62,8 +61,6 @@ class Extension {
 
   _focus() {
     if (this._window) {
-      log("TEST LOG: focus");
-      log("TEST", this);
       this.movePointerMaybe(this._window);
     }
 
@@ -72,7 +69,6 @@ class Extension {
   }
 
   _sync() {
-    // log("TEST LOG: sync");
     // if (this._window.demands_attention || this._window.urgent)
     //     return;
     // this._destroy();
