@@ -84,11 +84,7 @@ class Extension {
     if (!this.pointerAlreadyOnWindow(window) && !overview.visible) {
       // We don't want cursor to move when overview is visible.
 
-      // use get_buffer_rect instead of get_frame_rect here, because the frame_rect may
-      // exclude shadows, which might already cause a focus-on-hover event, therefore causing
-      // the pointer to jump around eratically.
-      const rect = window.get_buffer_rect();
-
+      const rect = window.get_frame_rect();
       if (!(rect.width < 10 && rect.height < 10)) {
         // xdg-copy creates a 1x1 pixel window to capture mouse events.
         // Ignore this and similar windows.
@@ -106,7 +102,7 @@ class Extension {
   pointerAlreadyOnWindow(window) {
     const [x, y] = global.get_pointer();
     const rect = new Meta.Rectangle({ x, y, width: 1, height: 1 });
-    return rect.intersect(window.get_buffer_rect())[0];
+    return rect.intersect(window.get_frame_rect())[0];
   }
 }
 
