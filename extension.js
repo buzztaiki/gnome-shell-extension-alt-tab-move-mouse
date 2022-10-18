@@ -13,8 +13,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+// Some details are based on the work done in https://github.com/LeonMatthes/mousefollowsfocus
+// Thanks @LeonMatthes for the extension.
+
 const { Clutter, Meta } = imports.gi;
 const Main = imports.ui.main;
+const overview = imports.ui.main.overview;
 
 class Extension {
   constructor() {
@@ -77,19 +81,32 @@ class Extension {
 
 
   movePointerMaybe(window) {
-    if (!this.pointerAlreadyOnWindow(window)) {
-      const rect = window.get_frame_rect();
+    if (!this.pointerAlreadyOnWindow(window) && !overview.visible) {
+      // We don't want cursor to move when overview is visible.
+
+      // use get_buffer_rect instead of get_frame_rect here, because the frame_rect may
+      // exclude shadows, which might already cause a focus-on-hover event, therefore causing
+      // the pointer to jump around eratically.
+      const rect = window.get_buffer_rect();
       const x = rect.x + rect.width / 2;
       const y = rect.y + rect.height / 2;
 
-      this.vdevice.notify_absolute_motion(global.get_current_time(), x, y);
+      if ((x == 0 && y == 0) || (rect.width < 10 && rect.height < 10)) {
+        // xdg-copy creates a 1x1 pixel window to capture mouse events.
+        // Ignore this and similar windows.
+        // When target position is (0, 0), it activates Overview hot-corner.
+        void(0);
+      }
+      else {
+        this.vdevice.notify_absolute_motion(global.get_current_time(), x, y);
+      }
     }
   }
 
   pointerAlreadyOnWindow(window) {
     const [x, y] = global.get_pointer();
     const rect = new Meta.Rectangle({ x, y, width: 1, height: 1 });
-    return rect.intersect(window.get_frame_rect())[0];
+    return rect.intersect(window.get_buffer_rect())[0];
   }
 }
 
