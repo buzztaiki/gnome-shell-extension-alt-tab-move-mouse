@@ -88,18 +88,18 @@ class Extension {
       // exclude shadows, which might already cause a focus-on-hover event, therefore causing
       // the pointer to jump around eratically.
       const rect = window.get_buffer_rect();
-      const x = rect.x + rect.width / 2;
-      const y = rect.y + rect.height / 2;
 
-      if ((x == 0 && y == 0) || (rect.width < 10 && rect.height < 10)) {
+      if (!(rect.width < 10 && rect.height < 10)) {
         // xdg-copy creates a 1x1 pixel window to capture mouse events.
         // Ignore this and similar windows.
-        // When target position is (0, 0), it activates Overview hot-corner.
-        void(0);
+        const x = rect.x + rect.width / 2;
+        const y = rect.y + rect.height / 2;
+        if (!(x == 0 && y == 0)) {
+          // When target position is (0, 0), it activates Overview hot-corner.
+          this.vdevice.notify_absolute_motion(global.get_current_time(), x, y);
+        }
       }
-      else {
-        this.vdevice.notify_absolute_motion(global.get_current_time(), x, y);
-      }
+      
     }
   }
 
