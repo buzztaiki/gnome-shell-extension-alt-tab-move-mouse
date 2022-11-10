@@ -1,4 +1,5 @@
 // Copyright (C) 2021  Taiki Sugawara
+// Copyright (C) 2022  vakokako
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,18 +14,35 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { Clutter, Meta } = imports.gi;
+const { Clutter, Meta, GObject } = imports.gi;
 const Main = imports.ui.main;
+const altTab = imports.ui.altTab;
+
+let CurrentMonitorAppSwitcherPopup;
+
+function init() {
+    CurrentMonitorAppSwitcherPopup = GObject.registerClass(
+        class CurrentMonitorAppSwitcherPopup extends altTab.AppSwitcherPopup {
+            _finish(timestamp) {
+                if (this._currentWindow < 0) {
+                    extension.movePointer();
+                }
+                super._finish(timestamp);
+            }
+        });
+}
 
 class Extension {
   constructor() {
     this.origMethods = {
-      "Main.activateWindow": Main.activateWindow
+      "Main.activateWindow": Main.activateWindow,
+      "appSwitcherPopup": altTab.AppSwitcherPopup
     };
     Main.activateWindow = (window, ...args) => {
       this.movePointerMaybe(window);
       this.origMethods["Main.activateWindow"](window, ...args);
     };
+    altTab.AppSwitcherPopup = CurrentMonitorAppSwitcherPopup;
     const seat = Clutter.get_default_backend().get_default_seat();
     this.vdevice = seat.create_virtual_device(
       Clutter.InputDeviceType.POINTER_DEVICE
@@ -33,6 +51,7 @@ class Extension {
 
   destroy() {
     Main.activateWindow = this.origMethods["Main.activateWindow"];
+    altTab.AppSwitcherPopup = this.origMethods["appSwitcherPopup"];
   }
 
   movePointerMaybe(window) {
