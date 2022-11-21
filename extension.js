@@ -25,7 +25,7 @@ function init() {
         class CurrentMonitorAppSwitcherPopup extends altTab.AppSwitcherPopup {
             _finish(timestamp) {
                 if (this._currentWindow < 0) {
-                    extension.movePointer();
+                    extension.movePointerMaybe(appIcon.cachedWindows[0]);
                 }
                 super._finish(timestamp);
             }
