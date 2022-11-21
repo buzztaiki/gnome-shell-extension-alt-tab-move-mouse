@@ -1,5 +1,6 @@
-// Copyright (C) 2021  Taiki Sugawara
+// Copyright (C) 2022  Lucas Emanuel Resck
 // Copyright (C) 2022  vakokako
+// Copyright (C) 2021  Taiki Sugawara
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
