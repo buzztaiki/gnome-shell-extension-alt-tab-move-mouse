@@ -1,3 +1,5 @@
+// Copyright (C) 2022  Lucas Emanuel Resck
+// Copyright (C) 2022  vakokako
 // Copyright (C) 2021  Taiki Sugawara
 
 // This program is free software: you can redistribute it and/or modify
@@ -13,18 +15,24 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { Clutter, Meta } = imports.gi;
+const { Clutter, Meta, GObject } = imports.gi;
 const Main = imports.ui.main;
+const altTab = imports.ui.altTab;
+
+let CurrentMonitorAppSwitcherPopup;
+let extension = null;
 
 class Extension {
   constructor() {
     this.origMethods = {
-      "Main.activateWindow": Main.activateWindow
+      "Main.activateWindow": Main.activateWindow,
+      "appSwitcherPopup": altTab.AppSwitcherPopup
     };
     Main.activateWindow = (window, ...args) => {
       this.movePointerMaybe(window);
       this.origMethods["Main.activateWindow"](window, ...args);
     };
+    altTab.AppSwitcherPopup = CurrentMonitorAppSwitcherPopup;
     const seat = Clutter.get_default_backend().get_default_seat();
     this.vdevice = seat.create_virtual_device(
       Clutter.InputDeviceType.POINTER_DEVICE
@@ -33,6 +41,7 @@ class Extension {
 
   destroy() {
     Main.activateWindow = this.origMethods["Main.activateWindow"];
+    altTab.AppSwitcherPopup = this.origMethods["appSwitcherPopup"];
   }
 
   movePointerMaybe(window) {
@@ -52,7 +61,19 @@ class Extension {
   }
 }
 
-let extension = null;
+function init() {
+    CurrentMonitorAppSwitcherPopup = GObject.registerClass(
+        class CurrentMonitorAppSwitcherPopup extends altTab.AppSwitcherPopup {
+            _finish(timestamp) {
+                let appIcon = this._items[this._selectedIndex];
+                if (this._currentWindow < 0) {
+                    extension.movePointerMaybe(appIcon.cachedWindows[0]);
+                }
+                super._finish(timestamp);
+            }
+        }
+	);
+}
 
 /* exported enable */
 function enable() {
