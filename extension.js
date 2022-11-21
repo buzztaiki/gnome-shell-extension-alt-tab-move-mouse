@@ -24,12 +24,14 @@ function init() {
     CurrentMonitorAppSwitcherPopup = GObject.registerClass(
         class CurrentMonitorAppSwitcherPopup extends altTab.AppSwitcherPopup {
             _finish(timestamp) {
+                let appIcon = this._items[this._selectedIndex];
                 if (this._currentWindow < 0) {
                     extension.movePointerMaybe(appIcon.cachedWindows[0]);
                 }
                 super._finish(timestamp);
             }
-        });
+        }
+	);
 }
 
 class Extension {
