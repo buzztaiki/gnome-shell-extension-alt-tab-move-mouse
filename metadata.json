@@ -2,9 +2,9 @@
   "name": "Alt-Tab Move Mouse",
   "description": "Move mouse pointer onto active window after Alt-Tab. This extension is workaround of some sloppy focus problems",
   "uuid": "alt-tab-move-mouse@buzztaiki.github.com",
-  "version": 3,
+  "version": 4,
   "url": "https://github.com/buzztaiki/gnome-shell-extension-alt-tab-move-mouse",
   "shell-version": [
-    "40", "41", "42", "43"
+    "40", "41", "42", "43", "44"
   ]
 }
